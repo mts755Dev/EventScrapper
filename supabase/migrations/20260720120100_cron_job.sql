@@ -10,7 +10,7 @@ create extension if not exists pg_net with schema extensions;
 
 select cron.schedule(
   'event-crawl',
-  '0 */6 * * *',
+  '0 * * * *',
   $$
   select net.http_post(
     url := 'https://YOUR_VERCEL_APP.vercel.app/api/cron/crawl',

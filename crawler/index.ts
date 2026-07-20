@@ -14,6 +14,7 @@ import {
   finishCrawlJob,
   getActiveSources,
   insertCrawlLog,
+  touchSourceCrawled,
 } from "@/services/crawl";
 import { upsertEvents } from "@/services/events";
 import { upsertOrganization } from "@/services/organizations";
@@ -27,6 +28,7 @@ export type CrawlRunResult = {
   status: "completed" | "failed";
   totalSites: number;
   totalEvents: number;
+  batchSize: number;
   errors: CrawlError[];
 };
 
@@ -174,12 +176,23 @@ export async function runCrawl(options?: {
   crawlLogger.info("crawl_started", { jobId: job.id, states });
 
   try {
-    let sources = await getActiveSources(states);
+    let sources = await getActiveSources(states, {
+      // Explicit sourceIds = full list for those ids; otherwise rotate a batch.
+      limit: options?.sourceIds?.length
+        ? undefined
+        : CRAWLER_CONFIG.maxSourcesPerRun,
+    });
 
     if (options?.sourceIds?.length) {
       const allow = new Set(options.sourceIds);
       sources = sources.filter((s) => allow.has(s.id));
     }
+
+    crawlLogger.info("crawl_batch_selected", {
+      jobId: job.id,
+      batchSize: sources.length,
+      maxPerRun: CRAWLER_CONFIG.maxSourcesPerRun,
+    });
 
     if (sources.length === 0) {
       crawlLogger.warn("crawl_no_active_sources", { jobId: job.id });
@@ -194,6 +207,7 @@ export async function runCrawl(options?: {
         status: "completed",
         totalSites: 0,
         totalEvents: 0,
+        batchSize: 0,
         errors: [],
       };
     }
@@ -265,6 +279,8 @@ export async function runCrawl(options?: {
         });
       }
 
+      await touchSourceCrawled(source.id);
+
       await insertCrawlLog({
         crawl_job_id: job.id,
         website: result.website,
@@ -297,6 +313,7 @@ export async function runCrawl(options?: {
       status,
       totalSites,
       totalEvents,
+      batchSize: sources.length,
       errors,
     };
   } catch (error) {
@@ -314,6 +331,7 @@ export async function runCrawl(options?: {
       status: "failed",
       totalSites,
       totalEvents,
+      batchSize: totalSites,
       errors,
     };
   } finally {

@@ -20,6 +20,8 @@ curl -X POST http://localhost:3000/api/cron/crawl \
 
 During each successful crawl, calendar/RSS links found on the page are **promoted** into `sources` (deduped by URL; inactive sources are never reactivated).
 
+On Vercel, each crawl processes a **batch** (default 6 sources, oldest `last_crawled_at` first) so the function finishes within the 300s limit. Run the crawl cron **hourly** so all sources rotate over the day.
+
 ## Automatic source discovery (free, no search APIs)
 
 Two free mechanisms grow the source list:

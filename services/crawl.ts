@@ -1,7 +1,10 @@
 import { createServiceClient } from "@/lib/supabase/service";
 import type { CrawlError, CrawlJob, CrawlLog, Json, Source } from "@/types/database";
 
-export async function getActiveSources(states?: string[]): Promise<Source[]> {
+export async function getActiveSources(
+  states?: string[],
+  options?: { limit?: number }
+): Promise<Source[]> {
   const supabase = createServiceClient();
   let query = supabase.from("sources").select("*").eq("active", true);
 
@@ -11,9 +14,32 @@ export async function getActiveSources(states?: string[]): Promise<Source[]> {
     );
   }
 
-  const { data, error } = await query.order("created_at", { ascending: true });
+  // Prefer never-crawled / oldest first so batches rotate across all sources.
+  query = query.order("last_crawled_at", {
+    ascending: true,
+    nullsFirst: true,
+  });
+
+  if (options?.limit && options.limit > 0) {
+    query = query.limit(options.limit);
+  }
+
+  const { data, error } = await query;
   if (error) throw new Error(`Failed to load sources: ${error.message}`);
   return data ?? [];
+}
+
+export async function touchSourceCrawled(sourceId: string): Promise<void> {
+  const supabase = createServiceClient();
+  const { error } = await supabase
+    .from("sources")
+    .update({ last_crawled_at: new Date().toISOString() })
+    .eq("id", sourceId);
+
+  if (error) {
+    // Non-fatal: rotation still works on next successful update
+    console.warn(`touchSourceCrawled failed: ${error.message}`);
+  }
 }
 
 export async function createCrawlJob(): Promise<CrawlJob> {

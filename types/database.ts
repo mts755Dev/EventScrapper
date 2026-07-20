@@ -77,6 +77,7 @@ export type Source = {
   type: string;
   state: string | null;
   active: boolean;
+  last_crawled_at: string | null;
   created_at: string;
 };
 
@@ -185,6 +186,7 @@ export type Database = {
           type: string;
           state?: string | null;
           active?: boolean;
+          last_crawled_at?: string | null;
           created_at?: string;
         };
         Update: Partial<Source>;
