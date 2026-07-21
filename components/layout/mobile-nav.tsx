@@ -19,7 +19,7 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 overflow-x-auto px-2 pb-2">
+    <nav className="flex flex-wrap gap-1 px-2 pb-2">
       {navItems.map((item) => {
         const active =
           item.href === "/"

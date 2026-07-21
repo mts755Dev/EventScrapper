@@ -95,8 +95,8 @@ export function EventsCalendar({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border">
-        <div className="grid min-w-[720px] grid-cols-7 border-b bg-muted/40">
+      <div className="overflow-hidden rounded-lg border">
+        <div className="grid grid-cols-7 border-b bg-muted/40">
           {WEEKDAYS.map((day) => (
             <div
               key={day}
@@ -106,7 +106,7 @@ export function EventsCalendar({
             </div>
           ))}
         </div>
-        <div className="grid min-w-[720px] grid-cols-7 auto-rows-[minmax(110px,1fr)]">
+        <div className="grid grid-cols-7 auto-rows-[minmax(88px,1fr)] sm:auto-rows-[minmax(110px,1fr)]">
           {cells.map((cell, index) => {
             if (!cell.day || !cell.key) {
               return (
@@ -124,7 +124,7 @@ export function EventsCalendar({
               <div
                 key={cell.key}
                 className={cn(
-                  "border-b border-r p-1.5 transition-colors hover:bg-muted/20",
+                  "min-w-0 border-b border-r p-1.5 transition-colors hover:bg-muted/20",
                   isToday && "bg-accent/40"
                 )}
               >

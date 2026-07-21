@@ -1,4 +1,5 @@
 import { buildEventHash } from "@/crawler/dedupe";
+import { shouldPersistEvent } from "@/crawler/extractors/relevance";
 import { createServiceClient } from "@/lib/supabase/service";
 import { normalizeUrl } from "@/utils/url";
 import type { RawEvent } from "@/types/crawler";
@@ -12,6 +13,7 @@ function toIsoOrNull(value?: string): string | null {
 
 /**
  * Upsert by dedupe_hash. Returns whether a new row was inserted.
+ * Skips past / irrelevant events (safety net after enrich filters).
  */
 export async function upsertEvent(
   event: RawEvent,
@@ -19,6 +21,7 @@ export async function upsertEvent(
   fallbackState?: string | null
 ): Promise<{ event: Event; created: boolean } | null> {
   if (!event.title?.trim()) return null;
+  if (!shouldPersistEvent(event)) return null;
 
   const supabase = createServiceClient();
   const hash = buildEventHash(event, organizationId);

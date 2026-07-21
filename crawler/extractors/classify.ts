@@ -6,6 +6,10 @@ import { EVENT_TYPES, type EventType } from "@/lib/constants/event-types";
  */
 const RULES: Array<{ type: EventType; patterns: RegExp[] }> = [
   {
+    type: "silent_auction",
+    patterns: [/silent\s+auction/i, /\braffle\b/i, /\b50[\s/]?50\b/i],
+  },
+  {
     type: "charity_golf_classic",
     patterns: [/charity\s+golf/i, /golf\s+classic/i, /golf\s+outing/i],
   },
@@ -44,10 +48,6 @@ const RULES: Array<{ type: EventType; patterns: RegExp[] }> = [
   {
     type: "walkathon",
     patterns: [/walk[\s-]?a[\s-]?thon/i, /\bwalkathon\b/i],
-  },
-  {
-    type: "silent_auction",
-    patterns: [/silent\s+auction/i],
   },
   {
     type: "live_auction",

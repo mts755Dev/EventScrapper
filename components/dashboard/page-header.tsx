@@ -17,7 +17,9 @@ export function PageHeader({
           <p className="text-sm text-muted-foreground">{description}</p>
         ) : null}
       </div>
-      {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
+      {actions ? (
+        <div className="flex flex-wrap items-center gap-2">{actions}</div>
+      ) : null}
     </div>
   );
 }
@@ -42,14 +44,14 @@ export function DataTable({
   }
 
   return (
-    <div className={cn("overflow-x-auto rounded-lg border", className)}>
-      <table className="w-full min-w-[640px] text-left text-sm">
+    <div className={cn("w-full rounded-lg border", className)}>
+      <table className="w-full table-auto text-left text-sm">
         <thead className="border-b bg-muted/40">
           <tr>
             {headers.map((header) => (
               <th
                 key={header}
-                className="px-3 py-2.5 font-medium text-muted-foreground"
+                className="px-3 py-2.5 font-medium break-words text-muted-foreground"
               >
                 {header}
               </th>

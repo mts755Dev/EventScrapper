@@ -3,7 +3,7 @@
 ## Design decisions
 
 1. **Multiple extractors, merge + dedupe** — JSON-LD, microdata, `<time>`, calendar cards, tables, and RSS all run; we keep anything with a title.
-2. **Coverage over precision** — Partial events (title + date, no venue) are stored. Sales can filter later in the dashboard.
+2. **Upcoming + raffle-relevant only** — `crawler/extractors/relevance.ts` drops past events and low-value listings (classes, meetings, etc.). Keeps nonprofit / fundraising / ticketed sports & community events.
 3. **Keyword `event_type` classifier** — Rules live in `crawler/extractors/classify.ts`. Add a pattern to support a new type — no DB migration.
 4. **Flexible date parsing** — `utils/dates.ts` normalizes common US formats to ISO when possible.
 5. **Follow RSS links** — If a page advertises an Atom/RSS alternate, the crawler fetches it.

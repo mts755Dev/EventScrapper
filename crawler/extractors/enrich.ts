@@ -1,11 +1,12 @@
 import { classifyEventType } from "@/crawler/extractors/classify";
+import { shouldPersistEvent } from "@/crawler/extractors/relevance";
 import { toIsoDate } from "@/utils/dates";
 import { normalizeUrl } from "@/utils/url";
 import type { RawEvent } from "@/types/crawler";
 
 /**
  * Normalize extracted events: dates → ISO, classify type, trim fields.
- * Keeps partial events (title-only) for maximum coverage.
+ * Drops past events and listings that are not raffle / fundraising relevant.
  */
 export function enrichEvents(
   events: RawEvent[],
@@ -21,7 +22,7 @@ export function enrichEvents(
     const start = toIsoDate(event.start_date) ?? event.start_date;
     const end = toIsoDate(event.end_date) ?? event.end_date;
 
-    result.push({
+    const normalized: RawEvent = {
       ...event,
       title: title.slice(0, 500),
       description: description ? description.slice(0, 5000) : undefined,
@@ -35,7 +36,10 @@ export function enrichEvents(
         ? normalizeUrl(event.ticket_url) ?? event.ticket_url
         : undefined,
       event_type: event.event_type || classifyEventType(title, description),
-    });
+    };
+
+    if (!shouldPersistEvent(normalized)) continue;
+    result.push(normalized);
   }
 
   return result;
