@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Event Opportunity Discovery",
+  title: "Chaffle Sales Discovery",
   description:
-    "Internal dashboard for discovering raffle event opportunities in NC and FL",
+    "Internal sales dashboard for discovering raffle event opportunities in NC and FL",
 };
 
 export default function RootLayout({

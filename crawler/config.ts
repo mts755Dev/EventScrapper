@@ -56,6 +56,13 @@ export const CRAWLER_CONFIG = {
   discoveryConcurrency: 4,
   /** Delay between discovery probes (ms) */
   discoveryDelayMs: 300,
+  /**
+   * Max attempts per source when crawl fails (initial + retries).
+   * Transient network / timeout errors get retried before logging as error.
+   */
+  maxSiteAttempts: 3,
+  /** Base delay before retry (ms); doubles each attempt */
+  siteRetryDelayMs: 800,
 } as const;
 
 export function getTargetStates(): string[] {

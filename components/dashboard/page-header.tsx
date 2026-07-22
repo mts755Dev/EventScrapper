@@ -10,9 +10,9 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
         {description ? (
           <p className="text-sm text-muted-foreground">{description}</p>
         ) : null}
@@ -37,28 +37,28 @@ export function DataTable({
 }) {
   if (empty) {
     return (
-      <div className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
+      <div className="rounded-xl border border-dashed p-12 text-center text-sm text-muted-foreground">
         No records found.
       </div>
     );
   }
 
   return (
-    <div className={cn("w-full rounded-lg border", className)}>
-      <table className="w-full table-auto text-left text-sm">
-        <thead className="border-b bg-muted/40">
+    <div className={cn("w-full overflow-x-auto rounded-xl border bg-card shadow-sm", className)}>
+      <table className="w-full text-left text-sm">
+        <thead className="border-b bg-muted/50">
           <tr>
             {headers.map((header) => (
               <th
                 key={header}
-                className="px-3 py-2.5 font-medium break-words text-muted-foreground"
+                className="whitespace-nowrap px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
               >
                 {header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y">{children}</tbody>
+        <tbody className="divide-y divide-border">{children}</tbody>
       </table>
     </div>
   );

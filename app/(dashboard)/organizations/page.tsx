@@ -5,7 +5,6 @@ import {
   buildOrgQuery,
   type OrgFilterValues,
 } from "@/components/organizations/org-filters";
-import { SalesTagBadges } from "@/components/sales/sales-tag-badges";
 import { Badge } from "@/components/ui/badge";
 import { listOrganizations } from "@/services/dashboard";
 import { formatDate } from "@/utils/format";
@@ -88,12 +87,12 @@ export default async function OrganizationsPage({
       <OrganizationFilters values={filters} />
 
       <DataTable
-        headers={["Name", "Category", "State", "Sales tags", "Source", "Added"]}
+        headers={["Name", "Category", "State", "Source", "Added"]}
         empty={rows.length === 0}
       >
         {rows.map((org) => (
-          <tr key={org.id} className="hover:bg-muted/30">
-            <td className="px-3 py-2.5">
+          <tr key={org.id} className="hover:bg-muted/40">
+            <td className="px-4 py-3">
               <Link
                 href={`/organizations/${org.id}`}
                 className="font-medium hover:underline"
@@ -101,25 +100,22 @@ export default async function OrganizationsPage({
                 {org.name}
               </Link>
               {org.website ? (
-                <p className="truncate text-xs text-muted-foreground">
+                <p
+                  className="truncate text-xs text-muted-foreground"
+                  title={org.website}
+                >
                   {org.website}
                 </p>
               ) : null}
             </td>
-            <td className="px-3 py-2.5">
+            <td className="whitespace-nowrap px-4 py-3">
               <Badge variant="outline">{categoryLabel(org.category)}</Badge>
             </td>
-            <td className="px-3 py-2.5">{org.state}</td>
-            <td className="px-3 py-2.5">
-              <SalesTagBadges
-                contacted={org.contacted}
-                disposition={org.disposition}
-              />
-            </td>
-            <td className="px-3 py-2.5 text-muted-foreground">
+            <td className="whitespace-nowrap px-4 py-3">{org.state}</td>
+            <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
               {org.source ?? "—"}
             </td>
-            <td className="px-3 py-2.5 text-muted-foreground">
+            <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
               {formatDate(org.created_at)}
             </td>
           </tr>

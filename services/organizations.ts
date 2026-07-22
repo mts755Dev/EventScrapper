@@ -23,7 +23,23 @@ export async function upsertOrganization(
         .limit(1)
         .maybeSingle();
 
-      if (existingBySite) {
+  if (existingBySite) {
+        const updates: { city?: string; category?: string } = {};
+        if (org.city && !existingBySite.city) updates.city = org.city;
+        if (
+          org.category &&
+          org.category !== "other" &&
+          (!existingBySite.category || existingBySite.category === "other")
+        ) {
+          updates.category = org.category;
+        }
+        if (Object.keys(updates).length > 0) {
+          await supabase
+            .from("organizations")
+            .update(updates)
+            .eq("id", existingBySite.id);
+          return { ...existingBySite, ...updates };
+        }
         return existingBySite;
       }
     }
@@ -38,12 +54,23 @@ export async function upsertOrganization(
     .maybeSingle();
 
   if (existing) {
-    if (website && !existing.website) {
+    const updates: { website?: string; city?: string; category?: string } = {};
+    if (website && !existing.website) updates.website = website;
+    if (org.city && !existing.city) updates.city = org.city;
+    if (
+      org.category &&
+      org.category !== "other" &&
+      (!existing.category || existing.category === "other")
+    ) {
+      updates.category = org.category;
+    }
+
+    if (Object.keys(updates).length > 0) {
       await supabase
         .from("organizations")
-        .update({ website })
+        .update(updates)
         .eq("id", existing.id);
-      return { ...existing, website };
+      return { ...existing, ...updates };
     }
     return existing;
   }

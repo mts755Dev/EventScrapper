@@ -1,6 +1,7 @@
 import { classifyEventType } from "@/crawler/extractors/classify";
 import { shouldPersistEvent } from "@/crawler/extractors/relevance";
 import { toIsoDate } from "@/utils/dates";
+import { parseLocationText } from "@/utils/location";
 import { normalizeUrl } from "@/utils/url";
 import type { RawEvent } from "@/types/crawler";
 
@@ -22,13 +23,27 @@ export function enrichEvents(
     const start = toIsoDate(event.start_date) ?? event.start_date;
     const end = toIsoDate(event.end_date) ?? event.end_date;
 
+    // Fill missing city/venue from free-text location strings
+    const fromVenue = event.venue ? parseLocationText(event.venue) : {};
+    const venue =
+      (fromVenue.venue || event.venue)?.replace(/\s+/g, " ").trim().slice(0, 300) ||
+      undefined;
+    const city =
+      event.city?.trim() ||
+      fromVenue.city ||
+      undefined;
+
     const normalized: RawEvent = {
       ...event,
       title: title.slice(0, 500),
       description: description ? description.slice(0, 5000) : undefined,
-      venue: event.venue?.replace(/\s+/g, " ").trim().slice(0, 300),
-      city: event.city?.trim(),
-      state: event.state?.trim().toUpperCase() || fallbackState || undefined,
+      venue,
+      city,
+      state:
+        event.state?.trim().toUpperCase() ||
+        fromVenue.state ||
+        fallbackState ||
+        undefined,
       start_date: start,
       end_date: end,
       source_url: normalizeUrl(event.source_url) ?? event.source_url,

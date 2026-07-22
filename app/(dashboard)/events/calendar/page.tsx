@@ -38,16 +38,24 @@ export default async function EventsCalendarPage({
         : undefined,
   };
 
-  const start = new Date(year, monthIndex, 1);
-  const end = new Date(year, monthIndex + 1, 1);
+  const monthStart = new Date(year, monthIndex, 1);
+  const monthEnd = new Date(year, monthIndex + 1, 1);
 
-  const events = await getEventsInRange({
-    start: start.toISOString(),
-    end: end.toISOString(),
-    state: filters.state,
-    eventType: filters.type,
-    q: filters.q,
-  });
+  // Only show today and future events (match Events list behavior)
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const start = monthStart < todayStart ? todayStart : monthStart;
+
+  const events =
+    start >= monthEnd
+      ? []
+      : await getEventsInRange({
+          start: start.toISOString(),
+          end: monthEnd.toISOString(),
+          state: filters.state,
+          eventType: filters.type,
+          q: filters.q,
+        });
 
   const query = new URLSearchParams();
   if (filters.q) query.set("q", filters.q);
@@ -70,6 +78,7 @@ export default async function EventsCalendarPage({
       <EventFilters
         values={filters}
         action="/events/calendar"
+        showDateRange={false}
         hiddenFields={{
           year: String(year),
           month: String(monthIndex + 1),

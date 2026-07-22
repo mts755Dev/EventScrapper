@@ -5,6 +5,7 @@ import {
 } from "@/crawler/discovery/links";
 import { linksToSourceCandidates } from "@/crawler/discovery/promote";
 import { mergeAndDedupeEvents } from "@/crawler/extractors/enrich";
+import { classifyOrganizationCategory } from "@/crawler/extractors/classify-org";
 import { fetchPage } from "@/crawler/fetchers";
 import { closeBrowser } from "@/crawler/fetchers/playwright";
 import { crawlLogger } from "@/crawler/logger";
@@ -20,6 +21,7 @@ import { upsertEvents } from "@/services/events";
 import { upsertOrganization } from "@/services/organizations";
 import { upsertDiscoveredSources } from "@/services/sources";
 import { normalizeUrl } from "@/utils/url";
+import { mostCommonCity } from "@/utils/location";
 import type { CrawlError } from "@/types/database";
 import type { CrawlSiteResult, RawEvent } from "@/types/crawler";
 
@@ -119,6 +121,7 @@ async function crawlSite(input: {
     }
 
     const events = mergeAndDedupeEvents([collected]);
+    const orgCity = mostCommonCity(events.map((e) => e.city));
 
     const organizations = orgName
       ? [
@@ -126,7 +129,12 @@ async function crawlSite(input: {
             name: orgName,
             website,
             state: input.state ?? undefined,
-            category: "other",
+            city: orgCity,
+            category: classifyOrganizationCategory({
+              name: orgName,
+              website,
+              sourceType: input.sourceType,
+            }),
             source: input.sourceType,
           },
         ]
@@ -158,6 +166,52 @@ async function crawlSite(input: {
       organizations: [],
     };
   }
+}
+
+/**
+ * Retry a failed site crawl up to CRAWLER_CONFIG.maxSiteAttempts times.
+ * Success with 0 events is not retried — only fetch/parse failures.
+ */
+async function crawlSiteWithRetry(input: {
+  url: string;
+  state: string | null;
+  sourceType: string;
+  sourceName: string;
+}): Promise<CrawlSiteResult> {
+  const maxAttempts = CRAWLER_CONFIG.maxSiteAttempts;
+  let lastResult: CrawlSiteResult | null = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    lastResult = await crawlSite(input);
+
+    if (lastResult.status === "success") {
+      if (attempt > 1) {
+        return {
+          ...lastResult,
+          message: `${lastResult.message ?? "ok"}; retries=${attempt - 1}`,
+        };
+      }
+      return lastResult;
+    }
+
+    crawlLogger.warn("crawl_site_retry", {
+      url: input.url,
+      source: input.sourceName,
+      attempt,
+      maxAttempts,
+      message: lastResult.message,
+    });
+
+    if (attempt < maxAttempts) {
+      const delay = CRAWLER_CONFIG.siteRetryDelayMs * attempt;
+      await sleep(delay);
+    }
+  }
+
+  return {
+    ...lastResult!,
+    message: `${lastResult!.message ?? "Unknown error"}; failed_after_${maxAttempts}_attempts`,
+  };
 }
 
 /**
@@ -220,7 +274,7 @@ export async function runCrawl(options?: {
         url: source.url,
       });
 
-      const result = await crawlSite({
+      const result = await crawlSiteWithRetry({
         url: source.url,
         state: source.state,
         sourceType: source.type,

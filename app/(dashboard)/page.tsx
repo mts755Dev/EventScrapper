@@ -64,17 +64,17 @@ export default async function DashboardPage() {
             empty={upcoming.length === 0}
           >
             {upcoming.map((event) => (
-              <tr key={event.id} className="hover:bg-muted/30">
-                <td className="px-3 py-2.5">
+              <tr key={event.id} className="hover:bg-muted/40">
+                <td className="px-4 py-3">
                   <Link href={`/events/${event.id}`} className="font-medium hover:underline">
                     {event.title}
                   </Link>
                 </td>
-                <td className="px-3 py-2.5 text-muted-foreground">
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {formatDate(event.start_date)}
                 </td>
-                <td className="px-3 py-2.5">{event.state ?? "—"}</td>
-                <td className="px-3 py-2.5">
+                <td className="whitespace-nowrap px-4 py-3">{event.state ?? "—"}</td>
+                <td className="whitespace-nowrap px-4 py-3">
                   <Badge variant="outline">{eventTypeLabel(event.event_type)}</Badge>
                 </td>
               </tr>
@@ -94,16 +94,16 @@ export default async function DashboardPage() {
             empty={recent.length === 0}
           >
             {recent.map((event) => (
-              <tr key={event.id} className="hover:bg-muted/30">
-                <td className="px-3 py-2.5">
+              <tr key={event.id} className="hover:bg-muted/40">
+                <td className="px-4 py-3">
                   <Link href={`/events/${event.id}`} className="font-medium hover:underline">
                     {event.title}
                   </Link>
                 </td>
-                <td className="px-3 py-2.5 text-muted-foreground">
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {formatRelative(event.created_at)}
                 </td>
-                <td className="px-3 py-2.5">{event.state ?? "—"}</td>
+                <td className="whitespace-nowrap px-4 py-3">{event.state ?? "—"}</td>
               </tr>
             ))}
           </DataTable>
@@ -124,11 +124,11 @@ export default async function DashboardPage() {
             empty={jobs.length === 0}
           >
             {jobs.map((job) => (
-              <tr key={job.id} className="hover:bg-muted/30">
-                <td className="px-3 py-2.5 text-muted-foreground">
+              <tr key={job.id} className="hover:bg-muted/40">
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {formatDateTime(job.started_at)}
                 </td>
-                <td className="px-3 py-2.5">
+                <td className="whitespace-nowrap px-4 py-3">
                   <Badge
                     variant={
                       job.status === "completed"
@@ -141,8 +141,8 @@ export default async function DashboardPage() {
                     {job.status}
                   </Badge>
                 </td>
-                <td className="px-3 py-2.5">{job.total_sites}</td>
-                <td className="px-3 py-2.5">{job.total_events}</td>
+                <td className="whitespace-nowrap px-4 py-3">{job.total_sites}</td>
+                <td className="whitespace-nowrap px-4 py-3">{job.total_events}</td>
               </tr>
             ))}
           </DataTable>
@@ -163,14 +163,14 @@ export default async function DashboardPage() {
             empty={failedLogs.length === 0}
           >
             {failedLogs.map((log) => (
-              <tr key={log.id} className="hover:bg-muted/30">
-                <td className="max-w-[220px] truncate px-3 py-2.5 font-medium">
+              <tr key={log.id} className="hover:bg-muted/40">
+                <td className="max-w-[220px] truncate px-4 py-3 font-medium" title={log.website}>
                   {log.website}
                 </td>
-                <td className="px-3 py-2.5 text-muted-foreground">
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {formatRelative(log.crawled_at)}
                 </td>
-                <td className="max-w-[240px] truncate px-3 py-2.5 text-muted-foreground">
+                <td className="max-w-[240px] truncate px-4 py-3 text-muted-foreground" title={log.message ?? ""}>
                   {log.message ?? "—"}
                 </td>
               </tr>

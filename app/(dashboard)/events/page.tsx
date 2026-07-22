@@ -15,7 +15,6 @@ import {
   EVENT_TYPES,
   type EventType,
 } from "@/lib/constants/event-types";
-import type { Disposition } from "@/types/database";
 
 function eventTypeLabel(value: string | null): string {
   if (!value) return "—";
@@ -32,13 +31,6 @@ function toIsoDateEnd(value?: string): string | undefined {
   return `${value}T23:59:59.999Z`;
 }
 
-function parseDisposition(value?: string): Disposition | undefined {
-  if (value === "none" || value === "accepted" || value === "declined") {
-    return value;
-  }
-  return undefined;
-}
-
 export default async function EventsPage({
   searchParams,
 }: {
@@ -49,9 +41,7 @@ export default async function EventsPage({
     type?: string;
     from?: string;
     to?: string;
-    upcoming?: string;
     contacted?: string;
-    disposition?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -71,12 +61,10 @@ export default async function EventsPage({
         : undefined,
     from: params.from || undefined,
     to: params.to || undefined,
-    upcoming: params.upcoming === "1" ? "1" : undefined,
     contacted:
       params.contacted === "1" || params.contacted === "0"
         ? params.contacted
         : undefined,
-    disposition: parseDisposition(params.disposition),
   };
 
   const { rows, total } = await listEvents({
@@ -87,14 +75,14 @@ export default async function EventsPage({
     eventType: filters.type,
     dateFrom: toIsoDateStart(filters.from),
     dateTo: toIsoDateEnd(filters.to),
-    upcomingOnly: filters.upcoming === "1",
+    // Crawl only stores upcoming events; hide any legacy past rows.
+    upcomingOnly: true,
     contacted:
       filters.contacted === "1"
         ? true
         : filters.contacted === "0"
           ? false
           : undefined,
-    disposition: parseDisposition(filters.disposition),
   });
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const filterQuery = buildEventsQuery(filters);
@@ -118,8 +106,8 @@ export default async function EventsPage({
         empty={rows.length === 0}
       >
         {rows.map((event) => (
-          <tr key={event.id} className="hover:bg-muted/30">
-            <td className="max-w-[240px] px-3 py-2.5">
+          <tr key={event.id} className="hover:bg-muted/40">
+            <td className="w-full max-w-[280px] px-3 py-2.5">
               <Link
                 href={`/events/${event.id}`}
                 className="line-clamp-2 font-medium hover:underline"
@@ -127,20 +115,20 @@ export default async function EventsPage({
                 {event.title}
               </Link>
             </td>
-            <td className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">
+            <td className="w-[1%] whitespace-nowrap px-3 py-2.5 text-muted-foreground">
               {formatDate(event.start_date)}
             </td>
-            <td className="px-3 py-2.5">{event.state ?? "—"}</td>
-            <td className="px-3 py-2.5">
+            <td className="w-[1%] whitespace-nowrap px-3 py-2.5">{event.state ?? "—"}</td>
+            <td className="w-[1%] whitespace-nowrap px-3 py-2.5">
               <Badge variant="outline">{eventTypeLabel(event.event_type)}</Badge>
             </td>
-            <td className="px-3 py-2.5">
+            <td className="w-[1%] whitespace-nowrap px-3 py-2.5">
               <SalesTagBadges
                 contacted={event.contacted}
                 disposition={event.disposition}
               />
             </td>
-            <td className="max-w-[140px] truncate px-3 py-2.5 text-muted-foreground">
+            <td className="w-[1%] max-w-[160px] truncate px-3 py-2.5 text-muted-foreground" title={event.venue ?? ""}>
               {event.venue ?? "—"}
             </td>
           </tr>

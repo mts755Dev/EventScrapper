@@ -46,6 +46,7 @@ export type Event = {
   dedupe_hash: string;
   contacted: boolean;
   disposition: Disposition;
+  is_lead: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -119,6 +120,7 @@ export type Database = {
           dedupe_hash: string;
           contacted?: boolean;
           disposition?: Disposition;
+          is_lead?: boolean;
           created_at?: string;
           updated_at?: string;
         };

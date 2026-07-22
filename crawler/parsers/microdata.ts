@@ -1,4 +1,5 @@
 import type { CheerioAPI } from "cheerio";
+import { parseLocationText } from "@/utils/location";
 import { absoluteUrl } from "@/utils/url";
 import type { RawEvent } from "@/types/crawler";
 
@@ -31,9 +32,22 @@ export function extractMicrodataEvents(
       scope.find('[itemprop="endDate"]').attr("datetime") ||
       scope.find('[itemprop="endDate"]').text().trim();
 
-    const venue =
+    const locationText =
       scope.find('[itemprop="location"] [itemprop="name"]').first().text().trim() ||
+      scope.find('[itemprop="address"] [itemprop="addressLocality"]').first().text().trim() ||
       scope.find('[itemprop="location"]').first().text().trim();
+    const locality = scope
+      .find('[itemprop="addressLocality"]')
+      .first()
+      .text()
+      .trim();
+    const region = scope
+      .find('[itemprop="addressRegion"]')
+      .first()
+      .text()
+      .trim()
+      .toUpperCase();
+    const location = locationText ? parseLocationText(locationText) : {};
 
     const description = scope
       .find('[itemprop="description"]')
@@ -48,7 +62,12 @@ export function extractMicrodataEvents(
     events.push({
       title,
       description: description || undefined,
-      venue: venue || undefined,
+      venue: location.venue || locationText || undefined,
+      city: locality || location.city || undefined,
+      state:
+        region === "NC" || region === "FL"
+          ? region
+          : location.state || undefined,
       start_date: start || undefined,
       end_date: end || undefined,
       source_url: urlAttr

@@ -1,5 +1,6 @@
 import type { CheerioAPI } from "cheerio";
 import { extractFirstDate } from "@/utils/dates";
+import { parseLocationText } from "@/utils/location";
 import { absoluteUrl } from "@/utils/url";
 import type { RawEvent } from "@/types/crawler";
 
@@ -51,18 +52,23 @@ export function extractCalendarListEvents(
     seen.add(key);
 
     const href = block.find("a[href]").first().attr("href");
-    const venue = block
-      .find("[class*='venue'], [class*='location'], address")
+    const locationText = block
+      .find(
+        "[class*='venue'], [class*='location'], [class*='address'], [class*='place'], [class*='where'], address, [itemprop='location'], [itemprop='address']"
+      )
       .first()
       .text()
       .replace(/\s+/g, " ")
       .trim();
+    const location = locationText ? parseLocationText(locationText) : {};
 
     events.push({
       title: title.slice(0, 500),
       description: text.length > title.length ? text.slice(0, 1000) : undefined,
       start_date: start,
-      venue: venue || undefined,
+      venue: location.venue || locationText || undefined,
+      city: location.city,
+      state: location.state,
       source_url: href ? absoluteUrl(href, pageUrl) ?? pageUrl : pageUrl,
     });
   });

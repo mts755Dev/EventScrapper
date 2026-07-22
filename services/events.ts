@@ -59,6 +59,7 @@ export async function upsertEvent(
       .update({
         description: payload.description ?? existing.description,
         venue: payload.venue ?? existing.venue,
+        city: payload.city ?? existing.city,
         ticket_url: payload.ticket_url ?? existing.ticket_url,
         end_date: payload.end_date ?? existing.end_date,
         source_url: payload.source_url ?? existing.source_url,

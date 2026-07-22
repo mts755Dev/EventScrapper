@@ -1,5 +1,6 @@
 import type { CheerioAPI } from "cheerio";
 import { extractFirstDate, toIsoDate } from "@/utils/dates";
+import { parseLocationText } from "@/utils/location";
 import { absoluteUrl } from "@/utils/url";
 import type { RawEvent } from "@/types/crawler";
 
@@ -41,17 +42,22 @@ export function extractTimeTagEvents(
     }
 
     const href = scope.find("a[href]").first().attr("href");
-    const venue = scope
-      .find("[class*='venue'], [class*='location'], address")
+    const locationText = scope
+      .find(
+        "[class*='venue'], [class*='location'], [class*='address'], [class*='place'], [class*='where'], address, [itemprop='location']"
+      )
       .first()
       .text()
       .replace(/\s+/g, " ")
       .trim();
+    const location = locationText ? parseLocationText(locationText) : {};
 
     events.push({
       title: title.slice(0, 500),
       start_date: start,
-      venue: venue || undefined,
+      venue: location.venue || locationText || undefined,
+      city: location.city,
+      state: location.state,
       source_url: href ? absoluteUrl(href, pageUrl) ?? pageUrl : pageUrl,
     });
   });

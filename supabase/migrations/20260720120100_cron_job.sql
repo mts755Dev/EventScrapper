@@ -38,4 +38,20 @@ select cron.schedule(
   );
   $$
 );
+
+-- Daily auto-cleanup: remove events 3+ days past that are not contacted
+select cron.schedule(
+  'event-cleanup',
+  '0 3 * * *',
+  $$
+  select net.http_post(
+    url := 'https://YOUR_VERCEL_APP.vercel.app/api/cron/cleanup-events',
+    headers := jsonb_build_object(
+      'Authorization', 'Bearer YOUR_CRON_SECRET',
+      'Content-Type', 'application/json'
+    ),
+    body := '{}'::jsonb
+  );
+  $$
+);
 */

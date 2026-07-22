@@ -354,4 +354,16 @@ export async function listSources(options?: {
   return data ?? [];
 }
 
+export async function listLeads(): Promise<Event[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("is_lead", true)
+    .order("start_date", { ascending: true });
+
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
 type SourceRow = import("@/types/database").Source;

@@ -44,7 +44,7 @@ export default async function SourcesPage({
       <form
         method="get"
         action="/sources"
-        className="mb-6 grid gap-3 rounded-lg border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4"
+        className="mb-6 grid gap-3 rounded-xl border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4"
       >
         <div className="space-y-1.5 sm:col-span-2">
           <Label htmlFor="q">Search</Label>
@@ -90,13 +90,15 @@ export default async function SourcesPage({
         empty={sources.length === 0}
       >
         {sources.map((source) => (
-          <tr key={source.id} className="hover:bg-muted/30">
-            <td className="px-3 py-2.5 font-medium">{source.name}</td>
-            <td className="px-3 py-2.5">
+          <tr key={source.id} className="hover:bg-muted/40">
+            <td className="max-w-[260px] truncate px-4 py-3 font-medium" title={source.name}>
+              {source.name}
+            </td>
+            <td className="whitespace-nowrap px-4 py-3">
               <Badge variant="outline">{typeLabel(source.type)}</Badge>
             </td>
-            <td className="px-3 py-2.5">{source.state ?? "—"}</td>
-            <td className="max-w-[240px] truncate px-3 py-2.5 text-muted-foreground">
+            <td className="whitespace-nowrap px-4 py-3">{source.state ?? "—"}</td>
+            <td className="max-w-[200px] truncate px-4 py-3 text-muted-foreground" title={source.url}>
               <a
                 href={source.url}
                 target="_blank"
@@ -106,15 +108,15 @@ export default async function SourcesPage({
                 {source.url}
               </a>
             </td>
-            <td className="px-3 py-2.5">
+            <td className="whitespace-nowrap px-4 py-3">
               <Badge variant={source.active ? "success" : "outline"}>
                 {source.active ? "active" : "inactive"}
               </Badge>
             </td>
-            <td className="px-3 py-2.5 text-muted-foreground">
+            <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
               {formatDate(source.created_at)}
             </td>
-            <td className="px-3 py-2.5">
+            <td className="whitespace-nowrap px-4 py-3">
               <form action={toggleSourceActive}>
                 <input type="hidden" name="id" value={source.id} />
                 <input

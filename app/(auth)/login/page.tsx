@@ -8,14 +8,14 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/40 p-6">
-      <div className="w-full max-w-md space-y-6">
-        <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Event Opportunity Discovery
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/10 p-6">
+      <div className="w-full max-w-md space-y-8">
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Chaffle Sales Discovery
           </h1>
           <p className="text-sm text-muted-foreground">
-            Find raffle-ready events across NC and FL
+            Find raffle-ready events across NC &amp; FL
           </p>
         </div>
         <LoginForm next={params.next ?? "/"} />

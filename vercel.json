@@ -6,6 +6,9 @@
     },
     "app/api/cron/discover-sources/route.ts": {
       "maxDuration": 300
+    },
+    "app/api/cron/cleanup-events/route.ts": {
+      "maxDuration": 30
     }
   }
 }

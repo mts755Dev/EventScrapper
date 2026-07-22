@@ -21,7 +21,7 @@ export function OrganizationFilters({ values }: { values: OrgFilterValues }) {
     <form
       method="get"
       action="/organizations"
-      className="mb-6 grid gap-3 rounded-lg border bg-card p-4 sm:grid-cols-2 lg:grid-cols-5"
+      className="mb-6 grid gap-3 rounded-xl border bg-card p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-5"
     >
       <div className="space-y-1.5 sm:col-span-2">
         <Label htmlFor="q">Search</Label>
@@ -80,7 +80,7 @@ export function OrganizationFilters({ values }: { values: OrgFilterValues }) {
           <option value="declined">Declined</option>
         </Select>
       </div>
-      <div className="flex gap-2 sm:col-span-2 lg:col-span-5">
+      <div className="flex gap-2 pt-1 sm:col-span-2 lg:col-span-5">
         <Button type="submit">Apply filters</Button>
         <Button asChild variant="outline">
           <Link href="/organizations">Clear</Link>

@@ -1,21 +1,9 @@
 import type { CheerioAPI } from "cheerio";
+import { parseLocationObject } from "@/utils/location";
 import type { RawEvent } from "@/types/crawler";
 
 function stringValue(value: unknown): string | undefined {
   if (typeof value === "string" && value.trim()) return value.trim();
-  return undefined;
-}
-
-function extractVenue(location: unknown): string | undefined {
-  if (!location) return undefined;
-  if (typeof location === "string") return location;
-  if (typeof location === "object" && location !== null) {
-    const loc = location as Record<string, unknown>;
-    return (
-      stringValue(loc.name) ||
-      stringValue((loc.address as Record<string, unknown> | undefined)?.name)
-    );
-  }
   return undefined;
 }
 
@@ -65,10 +53,13 @@ function collectLdEvents(
   if (isEvent) {
     const title = stringValue(obj.name) || stringValue(obj.headline);
     if (title) {
+      const location = parseLocationObject(obj.location);
       out.push({
         title,
         description: stringValue(obj.description),
-        venue: extractVenue(obj.location),
+        venue: location.venue,
+        city: location.city,
+        state: location.state,
         start_date: stringValue(obj.startDate),
         end_date: stringValue(obj.endDate),
         source_url: stringValue(obj.url) || pageUrl,

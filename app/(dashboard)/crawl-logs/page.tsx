@@ -38,17 +38,23 @@ export default async function CrawlLogsPage({
         title="Crawl Logs"
         description={`${total.toLocaleString()} per-site crawl results`}
         actions={
-          <div className="flex gap-2 text-sm">
+          <div className="flex gap-1">
             <Link
               href="/crawl-logs"
-              className={!status ? "font-medium underline" : "text-muted-foreground"}
+              className={
+                !status
+                  ? "rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm"
+                  : "rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-border hover:bg-accent hover:text-foreground"
+              }
             >
               All
             </Link>
             <Link
               href="/crawl-logs?status=error"
               className={
-                status === "error" ? "font-medium underline" : "text-muted-foreground"
+                status === "error"
+                  ? "rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm"
+                  : "rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-border hover:bg-accent hover:text-foreground"
               }
             >
               Errors
@@ -57,8 +63,8 @@ export default async function CrawlLogsPage({
               href="/crawl-logs?status=success"
               className={
                 status === "success"
-                  ? "font-medium underline"
-                  : "text-muted-foreground"
+                  ? "rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm"
+                  : "rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-border hover:bg-accent hover:text-foreground"
               }
             >
               Success
@@ -72,11 +78,11 @@ export default async function CrawlLogsPage({
         empty={rows.length === 0}
       >
         {rows.map((log) => (
-          <tr key={log.id} className="hover:bg-muted/30">
-            <td className="max-w-[260px] truncate px-3 py-2.5 font-medium">
+          <tr key={log.id} className="hover:bg-muted/40">
+            <td className="max-w-[260px] truncate px-4 py-3 font-medium" title={log.website}>
               {log.website}
             </td>
-            <td className="px-3 py-2.5">
+            <td className="whitespace-nowrap px-4 py-3">
               <Badge
                 variant={
                   log.status === "success"
@@ -89,11 +95,11 @@ export default async function CrawlLogsPage({
                 {log.status}
               </Badge>
             </td>
-            <td className="px-3 py-2.5">{log.events_found}</td>
-            <td className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">
+            <td className="whitespace-nowrap px-4 py-3">{log.events_found}</td>
+            <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
               {formatDateTime(log.crawled_at)}
             </td>
-            <td className="max-w-[280px] truncate px-3 py-2.5 text-muted-foreground">
+            <td className="max-w-[280px] truncate px-4 py-3 text-muted-foreground" title={log.message ?? ""}>
               {log.message ?? "—"}
             </td>
           </tr>

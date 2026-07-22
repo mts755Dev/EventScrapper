@@ -19,12 +19,11 @@ export function LoginForm({ next = "/" }: { next?: string }) {
   const [state, formAction, pending] = useActionState(login, initialState);
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
+    <Card className="w-full max-w-md shadow-lg">
+      <CardHeader className="text-center">
         <CardTitle>Sign in</CardTitle>
         <CardDescription>
-          Internal access for the sales team. Accounts are created by an admin
-          in Supabase.
+          Internal access for the sales team.
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -2,9 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Badge } from "@/components/ui/badge";
-import { SalesTagBadges } from "@/components/sales/sales-tag-badges";
-import { SalesTagControls } from "@/components/sales/sales-tag-controls";
+import { Button } from "@/components/ui/button";
 import { getEventById, getOrganizationById } from "@/services/dashboard";
+import { addToLead, removeFromLead, deleteEvent } from "@/app/(dashboard)/lead-actions";
 import { formatDate, formatDateTime } from "@/utils/format";
 import { EVENT_TYPE_LABELS, type EventType } from "@/lib/constants/event-types";
 
@@ -26,76 +26,90 @@ export default async function EventDetailPage({
     : "—";
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="max-w-3xl">
       <PageHeader
         title={event.title}
         description="Event opportunity detail"
         actions={
-          <Link
-            href="/events"
-            className="text-sm text-muted-foreground hover:underline"
-          >
-            ← Back to events
-          </Link>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/events">← Back to events</Link>
+          </Button>
         }
       />
 
-      <div className="space-y-6 rounded-lg border p-6">
-        <div className="flex flex-wrap gap-2">
+      <div className="space-y-6 rounded-xl border bg-card p-6 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline">{typeLabel}</Badge>
           {event.state ? <Badge>{event.state}</Badge> : null}
-          <SalesTagBadges
-            contacted={event.contacted}
-            disposition={event.disposition}
-          />
+          {event.is_lead ? (
+            <Badge variant="success">Lead</Badge>
+          ) : null}
+          {event.contacted ? (
+            <Badge variant="warning">Contacted</Badge>
+          ) : null}
         </div>
 
-        <div className="rounded-md border bg-muted/20 p-4">
-          <h2 className="mb-3 text-sm font-medium">Sales tags</h2>
-          <SalesTagControls
-            entity="event"
-            id={event.id}
-            contacted={event.contacted}
-            disposition={event.disposition}
-          />
+        <div className="flex flex-wrap gap-2">
+          {event.is_lead ? (
+            <form action={removeFromLead}>
+              <input type="hidden" name="id" value={event.id} />
+              <Button type="submit" variant="outline" size="sm">
+                Remove from Leads
+              </Button>
+            </form>
+          ) : (
+            <form action={addToLead}>
+              <input type="hidden" name="id" value={event.id} />
+              <Button type="submit" size="sm">
+                Add to Lead
+              </Button>
+            </form>
+          )}
+          <form action={deleteEvent}>
+            <input type="hidden" name="id" value={event.id} />
+            <input type="hidden" name="redirect" value="/events" />
+            <Button type="submit" variant="destructive" size="sm">
+              Delete
+            </Button>
+          </form>
         </div>
 
-        <dl className="grid gap-4 sm:grid-cols-2">
+        <dl className="grid gap-5 sm:grid-cols-2">
           <div>
-            <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+            <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Start
             </dt>
-            <dd className="mt-1">{formatDateTime(event.start_date)}</dd>
+            <dd className="mt-1 text-sm text-foreground">{formatDateTime(event.start_date)}</dd>
           </div>
           <div>
-            <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+            <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               End
             </dt>
-            <dd className="mt-1">{formatDateTime(event.end_date)}</dd>
+            <dd className="mt-1 text-sm text-foreground">{formatDateTime(event.end_date)}</dd>
           </div>
           <div>
-            <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+            <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Venue
             </dt>
-            <dd className="mt-1">{event.venue ?? "—"}</dd>
+            <dd className="mt-1 text-sm text-foreground">{event.venue ?? "—"}</dd>
           </div>
           <div>
-            <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+            <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Location
             </dt>
-            <dd className="mt-1">
+            <dd className="mt-1 text-sm text-foreground">
               {[event.city, event.state].filter(Boolean).join(", ") || "—"}
             </dd>
           </div>
           <div>
-            <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+            <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Organization
             </dt>
-            <dd className="mt-1">
+            <dd className="mt-1 text-sm text-foreground">
               {org ? (
                 <Link
                   href={`/organizations/${org.id}`}
-                  className="hover:underline"
+                  className="text-primary hover:underline"
                 >
                   {org.name}
                 </Link>
@@ -105,16 +119,16 @@ export default async function EventDetailPage({
             </dd>
           </div>
           <div>
-            <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+            <dt className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Discovered
             </dt>
-            <dd className="mt-1">{formatDate(event.created_at)}</dd>
+            <dd className="mt-1 text-sm text-foreground">{formatDate(event.created_at)}</dd>
           </div>
         </dl>
 
         {event.description ? (
           <div>
-            <h2 className="text-sm font-medium">Description</h2>
+            <h2 className="text-sm font-semibold text-foreground">Description</h2>
             <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
               {event.description}
             </p>

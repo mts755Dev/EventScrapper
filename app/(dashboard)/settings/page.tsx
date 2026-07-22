@@ -9,13 +9,13 @@ export default function SettingsPage() {
     .filter(Boolean);
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="max-w-2xl">
       <PageHeader
         title="Settings"
         description="Runtime configuration for crawls. Edit via environment variables for now."
       />
 
-      <div className="space-y-4 rounded-lg border p-6">
+      <div className="space-y-4 rounded-xl border p-6">
         <div>
           <h2 className="text-sm font-medium">Target states</h2>
           <p className="mt-1 text-sm text-muted-foreground">

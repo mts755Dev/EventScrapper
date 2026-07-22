@@ -9,7 +9,7 @@ export function SalesTagBadges({
   disposition: Disposition;
 }) {
   return (
-    <span className="inline-flex flex-wrap gap-1">
+    <span className="inline-flex flex-wrap items-center gap-1.5">
       {contacted ? (
         <Badge variant="warning">Contacted</Badge>
       ) : (
@@ -20,9 +20,6 @@ export function SalesTagBadges({
       ) : null}
       {disposition === "declined" ? (
         <Badge variant="destructive">Declined</Badge>
-      ) : null}
-      {disposition === "none" ? (
-        <Badge variant="outline">No decision</Badge>
       ) : null}
     </span>
   );

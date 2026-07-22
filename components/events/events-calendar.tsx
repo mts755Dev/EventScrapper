@@ -71,7 +71,7 @@ export function EventsCalendar({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+        <h2 className="text-lg font-bold tracking-tight">{title}</h2>
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" size="sm">
             <Link
@@ -95,12 +95,12 @@ export function EventsCalendar({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border">
-        <div className="grid grid-cols-7 border-b bg-muted/40">
+      <div className="overflow-hidden rounded-xl border shadow-sm">
+        <div className="grid grid-cols-7 border-b bg-muted/50">
           {WEEKDAYS.map((day) => (
             <div
               key={day}
-              className="px-2 py-2 text-center text-xs font-medium text-muted-foreground"
+              className="px-2 py-2 text-center text-xs font-semibold text-muted-foreground"
             >
               {day}
             </div>
@@ -125,13 +125,13 @@ export function EventsCalendar({
                 key={cell.key}
                 className={cn(
                   "min-w-0 border-b border-r p-1.5 transition-colors hover:bg-muted/20",
-                  isToday && "bg-accent/40"
+                  isToday && "ring-2 ring-primary/30 bg-primary/5"
                 )}
               >
                 <div
                   className={cn(
                     "mb-1 text-xs font-medium",
-                    isToday ? "text-foreground" : "text-muted-foreground"
+                    isToday ? "text-primary font-semibold" : "text-muted-foreground"
                   )}
                 >
                   {cell.day}
@@ -141,7 +141,7 @@ export function EventsCalendar({
                     <Link
                       key={event.id}
                       href={`/events/${event.id}`}
-                      className="block truncate rounded bg-primary/10 px-1.5 py-0.5 text-[11px] leading-tight text-foreground hover:bg-primary/20"
+                      className="block truncate rounded bg-primary/15 px-1.5 py-0.5 text-[11px] font-medium leading-tight text-foreground hover:bg-primary/25"
                       title={event.title}
                     >
                       {event.title}

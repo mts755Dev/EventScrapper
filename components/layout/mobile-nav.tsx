@@ -9,6 +9,7 @@ const navItems = [
   { href: "/events", label: "Events" },
   { href: "/events/calendar", label: "Calendar" },
   { href: "/organizations", label: "Orgs" },
+  { href: "/leads", label: "Leads" },
   { href: "/crawl-jobs", label: "Jobs" },
   { href: "/crawl-logs", label: "Logs" },
   { href: "/sources", label: "Sources" },
@@ -19,7 +20,7 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-wrap gap-1 px-2 pb-2">
+    <nav className="flex flex-wrap gap-1 border-t px-3 py-2">
       {navItems.map((item) => {
         const active =
           item.href === "/"
@@ -35,10 +36,10 @@ export function MobileNav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "shrink-0 rounded-md px-2.5 py-1.5 text-xs",
+              "shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
               active
-                ? "bg-accent font-medium text-accent-foreground"
-                : "text-muted-foreground"
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground"
             )}
           >
             {item.label}

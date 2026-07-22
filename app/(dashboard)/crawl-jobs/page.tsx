@@ -28,14 +28,14 @@ export default async function CrawlJobsPage({
         empty={rows.length === 0}
       >
         {rows.map((job) => (
-          <tr key={job.id} className="hover:bg-muted/30">
-            <td className="px-3 py-2.5 text-muted-foreground">
+          <tr key={job.id} className="hover:bg-muted/40">
+            <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
               {formatDateTime(job.started_at)}
             </td>
-            <td className="px-3 py-2.5 text-muted-foreground">
+            <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
               {formatDateTime(job.finished_at)}
             </td>
-            <td className="px-3 py-2.5">
+            <td className="whitespace-nowrap px-4 py-3">
               <Badge
                 variant={
                   job.status === "completed"
@@ -48,12 +48,12 @@ export default async function CrawlJobsPage({
                 {job.status}
               </Badge>
             </td>
-            <td className="px-3 py-2.5">{job.total_sites}</td>
-            <td className="px-3 py-2.5">{job.total_events}</td>
-            <td className="px-3 py-2.5">
+            <td className="px-4 py-3">{job.total_sites}</td>
+            <td className="px-4 py-3">{job.total_events}</td>
+            <td className="px-4 py-3">
               {Array.isArray(job.errors) ? job.errors.length : 0}
             </td>
-            <td className="px-3 py-2.5">
+            <td className="whitespace-nowrap px-4 py-3">
               <Link
                 href={`/crawl-logs?job=${job.id}`}
                 className="text-sm hover:underline"
